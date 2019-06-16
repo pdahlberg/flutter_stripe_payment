@@ -30,7 +30,7 @@ class StripeDialog : androidx.fragment.app.DialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        return inflater!!.inflate(R.layout.activity_stripe, container)
+        return inflater.inflate(R.layout.activity_stripe, container)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,7 +50,7 @@ class StripeDialog : androidx.fragment.app.DialogFragment() {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState)
 
-        setStyle(androidx.fragment.app.DialogFragment.STYLE_NO_TITLE, R.style.Theme_AppCompat_Light_Dialog)
+        setStyle(STYLE_NO_TITLE, R.style.Theme_AppCompat_Light_Dialog)
     }
 
     var tokenListener: ((String) -> (Unit))? = null
@@ -69,17 +69,16 @@ class StripeDialog : androidx.fragment.app.DialogFragment() {
 
                 val stripe = Stripe(activity!!, publishableKey)
                 stripe.createSource(SourceParams.createCardParams(card), object : SourceCallback {
-                    override fun onSuccess(source: Source?) {
+                    override fun onSuccess(source: Source) {
                         view?.findViewById<View>(R.id.progress)?.visibility = View.GONE
                         view?.findViewById<View>(R.id.buttonSave)?.visibility = View.GONE
 
-                        if (source != null) {
-                            tokenListener?.invoke(source.id)
-                            dismiss()
-                        }
+                        val sourceId = source.id ?: throw RuntimeException("Missing Source ID")
+                        tokenListener?.invoke(sourceId)
+                        dismiss()
                     }
 
-                    override fun onError(error: Exception?) {
+                    override fun onError(error: Exception) {
                         view?.findViewById<View>(R.id.progress)?.visibility = View.GONE
                         view?.findViewById<View>(R.id.buttonSave)?.visibility = View.VISIBLE
                         view?.let {
