@@ -63,5 +63,5 @@ android {
 
 dependencies {
     api 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.2.20'
-    api 'com.stripe:stripe-android:6.1.2'
+    api 'com.stripe:stripe-android:9.3.2'
 }
