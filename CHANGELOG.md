@@ -1,3 +1,18 @@
+## [0.2.1] - 27.08.2019
+
+* Update Stripe dependencies
+
+## [0.2.0] - 13.08.2019
+
+* BREAKING: This plugin now uses the Payment Intent to create a payment method instead of creating a Source.
+
+## [0.1.1] - 07.08.2019
+
+* Breaking: Minimum Android target is 19 (from 18)
+* Breaking: Minimum iOS target is 9.0 (from 8.0)
+* Update Android Stripe dependency to 10.2.1
+* Update iOS Stripe dependency to 16.0.3
+
 ## [0.1.0] - 22.02.2019
 
 * Breaking change: use AndroidX

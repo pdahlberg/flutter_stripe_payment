@@ -37,25 +37,16 @@
     
     STPAPIClient *apiClient = [[STPAPIClient alloc] initWithConfiguration:[STPPaymentConfiguration sharedConfiguration]];
 
-    STPCardParams *cardParams = paymentCell.cardParams;
-    //cardParams.address = self.addressViewModel.address;
-    cardParams.currency = self.managedAccountCurrency;
-    STPSourceParams *sourceParams = [STPSourceParams cardParamsWithCard:cardParams];
+    STPPaymentMethodCardParams *cardParams = paymentCell.cardParams;
+    STPPaymentMethodParams *paymentMethodParams = [STPPaymentMethodParams paramsWithCard:cardParams billingDetails:nil metadata:nil];
+
     if (cardParams) {
-        [apiClient createSourceWithParams:sourceParams completion:^(STPSource *source, NSError *tokenError) {
-            if (tokenError) {
-                //[self handleCardTokenError:tokenError];
+        [apiClient createPaymentMethodWithParams:paymentMethodParams completion:^(STPPaymentMethod * _Nullable paymentMethod, NSError * _Nullable error) {
+            if (error) {
+                [self performSelector:@selector(handleError:) withObject:error afterDelay:0];
             }
             else {
-                [self.srcDelegate addCardViewController:self didCreateSource:source completion:^(NSError * _Nullable error) {
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        if (error) {
-                            //[self handleCardTokenError:error];
-                        }
-                        else {
-                            //self.loading = NO;
-                        }
-                    }];
+                [self.srcDelegate addCardViewController:self didCreatePaymentMethod:paymentMethod completion:^(NSError * _Nullable error) {
                 }];
             }
         }];
