@@ -2,16 +2,17 @@ package de.jonasbark.stripepayment
 
 import android.content.Context
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.material.snackbar.Snackbar
 import com.stripe.android.ApiResultCallback
 import com.stripe.android.PaymentConfiguration
 import com.stripe.android.Stripe
-import com.stripe.android.model.*
+import com.stripe.android.model.PaymentMethod
+import com.stripe.android.model.PaymentMethodCreateParams
 import com.stripe.android.view.CardMultilineWidget
-import java.lang.Exception
+import kotlinx.android.synthetic.main.activity_stripe.*
 
 class StripeDialog : androidx.fragment.app.DialogFragment() {
 
@@ -41,7 +42,7 @@ class StripeDialog : androidx.fragment.app.DialogFragment() {
         val title = arguments?.getString("title", "Add Source")
         dialog?.setTitle(title)
 
-        view.findViewById<View>(R.id.buttonSave)?.setOnClickListener {
+        buttonSave.setOnClickListener {
             getToken()
         }
 
@@ -59,15 +60,14 @@ class StripeDialog : androidx.fragment.app.DialogFragment() {
     var tokenListener: ((String) -> (Unit))? = null
 
     private fun getToken() {
-        val mCardInputWidget =
-            view?.findViewById<View>(R.id.card_input_widget) as CardMultilineWidget
+        val mCardInputWidget = card_input_widget as CardMultilineWidget
 
         if (mCardInputWidget.validateAllFields()) {
 
             mCardInputWidget.card?.let { card ->
 
-                view?.findViewById<View>(R.id.progress)?.visibility = View.VISIBLE
-                view?.findViewById<View>(R.id.buttonSave)?.visibility = View.GONE
+                progress.visibility = View.VISIBLE
+                buttonSave.visibility = View.GONE
 
                 val publishableKey = arguments?.getString("publishableKey", null) ?: ""
                 PaymentConfiguration.init(context(), publishableKey)
@@ -84,8 +84,8 @@ class StripeDialog : androidx.fragment.app.DialogFragment() {
                     paymentMethodCreateParams,
                     object : ApiResultCallback<PaymentMethod> {
                         override fun onSuccess(result: PaymentMethod) {
-                            view?.findViewById<View>(R.id.progress)?.visibility = View.GONE
-                            view?.findViewById<View>(R.id.buttonSave)?.visibility = View.GONE
+                            progress.visibility = View.GONE
+                            buttonSave.visibility = View.GONE
 
                             if (result.id != null) {
                                 tokenListener?.invoke(result.id!!)
@@ -94,8 +94,8 @@ class StripeDialog : androidx.fragment.app.DialogFragment() {
                         }
 
                         override fun onError(error: Exception) {
-                            view?.findViewById<View>(R.id.progress)?.visibility = View.GONE
-                            view?.findViewById<View>(R.id.buttonSave)?.visibility = View.VISIBLE
+                            progress.visibility = View.GONE
+                            buttonSave.visibility = View.VISIBLE
                             view?.let {
                                 Snackbar.make(it, error.localizedMessage, Snackbar.LENGTH_LONG)
                                     .show()
