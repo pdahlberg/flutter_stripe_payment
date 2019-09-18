@@ -1,3 +1,8 @@
+## [0.3.0] - 18.09.2019
+
+* Adding support for SetupIntent and 3DSecure validation. Probably not complete, but the basic test case works with card "4000 0000 0000 3220".
+* BREAKING: the "addSource" call is renamed to "createPaymentMethod" which is what it actually does since I guess 0.2.0.
+
 ## [0.2.1] - 27.08.2019
 
 * Update Stripe dependencies
