@@ -20,13 +20,13 @@ android.enableJetifier=true
 To set your publishable key set:
 ```dart
 import 'package:stripe_payment/stripe_payment.dart';
-StripeSource.setPublishableKey("pk_test");
+StripeSource.init("pk_test");
 ```
-from somewhere in your code, e.g. your main.dart file.
+from somewhere in your code, e.g. your main.dart file. You can also set timeout for 3DSecure and a SetupIntent client secret.
 
 To open the dialog:
 ```dart
-StripeSource.addSource().then((String token) {
+StripeSource.createPaymentMethod().then((String token) {
     print(token); //your stripe card source token
 });
 ```
