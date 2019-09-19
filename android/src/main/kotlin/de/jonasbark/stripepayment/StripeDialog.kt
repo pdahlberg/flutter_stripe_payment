@@ -136,7 +136,6 @@ class StripeDialog : androidx.fragment.app.DialogFragment() {
     }
 
     private fun configure3DSecure(timeout: Int) {
-        //Log.d("STRIPE", "Enabling 3DSecure")
         val uiCustomization = PaymentAuthConfig.Stripe3ds2UiCustomization.Builder().build()
         PaymentAuthConfig.init(PaymentAuthConfig.Builder()
                 .set3ds2Config(PaymentAuthConfig.Stripe3ds2Config.Builder()
@@ -150,7 +149,6 @@ class StripeDialog : androidx.fragment.app.DialogFragment() {
     }
 
     private fun confirmSetupIntent(stripe: Stripe, paymentMethodId: String, setupIntentSecret: String) {
-        //Log.d("STRIPE", "Confirming SetupIntent with pm: $paymentMethodId and seti: $setupIntentSecret")
         val params = ConfirmSetupIntentParams.create(paymentMethodId, setupIntentSecret)
         stripe.confirmSetupIntent(this, params)
     }
@@ -160,7 +158,7 @@ class StripeDialog : androidx.fragment.app.DialogFragment() {
 
         val stripe = Stripe(activity!!, PaymentConfiguration.getInstance(context()).publishableKey)
 
-        stripe.onSetupResult(requestCode, data,
+        stripe.onSetupResult(50001, data,
                 object : ApiResultCallback<SetupIntentResult> {
                     override fun onSuccess(result: SetupIntentResult) {
                         val status = result.intent.status ?: StripeIntent.Status.Canceled
@@ -169,14 +167,13 @@ class StripeDialog : androidx.fragment.app.DialogFragment() {
                             tokenListener?.invoke(status, pmId)
                             dismiss()
                         } else {
-                            Log.d("STRIPE", "Status require confirmation")
                             tokenListener?.invoke(status, null)
                             dismiss()
                         }
                     }
 
                     override fun onError(e: Exception) {
-                        Log.d("STRIPE", "Some other error: ${e.message}")
+                        Log.e("STRIPE", "Error handling SetupIntent result: ${e.message}", e)
                     }
                 })
     }
