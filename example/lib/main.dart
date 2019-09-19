@@ -31,8 +31,8 @@ class _MyAppState extends State<MyApp> {
             child: Text("Add Card"),
             onPressed: () {
               print("Ready: ${StripeSource.ready}");
-              StripeSource.addSource().then((String token) {
-                _addSource(token);
+              StripeSource.createPaymentMethod().then((String token) {
+                _paymentMethodCreated(token);
               });
             },
           ),
@@ -41,7 +41,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void _addSource(String token) {
+  void _paymentMethodCreated(String token) {
     print("Token => $token");
   }
 }
