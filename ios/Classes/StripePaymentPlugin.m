@@ -13,7 +13,7 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-  if ([@"addSource" isEqualToString:call.method]) {
+  if ([@"createPaymentMethod" isEqualToString:call.method]) {
       [self openStripeCardVC:result];
   }
   else if ([@"setPublishableKey" isEqualToString:call.method]) {
