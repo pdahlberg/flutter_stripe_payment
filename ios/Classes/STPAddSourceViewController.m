@@ -8,7 +8,7 @@
 
 #import "STPAddSourceViewController.h"
 
-@interface STPAddSourceViewController ()
+@interface STPAddSourceViewController() <STPAuthenticationContext>
 
 @end
 
@@ -37,6 +37,8 @@
     
     STPAPIClient *apiClient = [[STPAPIClient alloc] initWithConfiguration:[STPPaymentConfiguration sharedConfiguration]];
 
+    // todo: 3DSecure config
+    
     STPPaymentMethodCardParams *cardParams = paymentCell.cardParams;
     STPPaymentMethodParams *paymentMethodParams = [STPPaymentMethodParams paramsWithCard:cardParams billingDetails:nil metadata:nil];
 
@@ -44,13 +46,44 @@
         [apiClient createPaymentMethodWithParams:paymentMethodParams completion:^(STPPaymentMethod * _Nullable paymentMethod, NSError * _Nullable error) {
             if (error) {
                 [self performSelector:@selector(handleError:) withObject:error afterDelay:0];
-            }
-            else {
-                [self.srcDelegate addCardViewController:self didCreatePaymentMethod:paymentMethod completion:^(NSError * _Nullable error) {
-                }];
+            } else if(self.setupIntentId != NULL) {
+                [self confirmSetupIntent:self.setupIntentId paymentMethod:paymentMethod];
+            } else {
+                [self returnResult:paymentMethod];
             }
         }];
     }
+}
+
+-(void) returnResult:(STPPaymentMethod *)pm {
+    NSLog(@"Return result: %@", pm.stripeId);
+    [self.srcDelegate addCardViewController:self didCreatePaymentMethod:pm completion:^(NSError * _Nullable error) {
+    }];
+}
+
+-(void) confirmSetupIntent:(NSString *)siId paymentMethod:(STPPaymentMethod *)pm {
+    STPSetupIntentConfirmParams *params = [[STPSetupIntentConfirmParams alloc] initWithClientSecret:siId];
+    params.paymentMethodID = pm.stripeId;
+    
+    NSLog(@"Confirm setup intent: %@", siId);
+
+    [[STPPaymentHandler sharedHandler]
+     confirmSetupIntent:params
+     withAuthenticationContext:self
+     completion:^(STPPaymentHandlerActionStatus status, STPSetupIntent * setupIntent, NSError * error) {
+           switch (status) {
+               case STPPaymentHandlerActionStatusSucceeded:
+                    [self returnResult:pm];
+                    break;
+                   // Setup succeeded
+               case STPPaymentHandlerActionStatusCanceled:
+                   break;
+                   // Handle cancel
+               case STPPaymentHandlerActionStatusFailed:
+                   break;
+                   // Handle error
+           }
+       }];
 }
 
 /*
@@ -62,5 +95,9 @@
     // Pass the selected object to the new view controller.
 }
 */
+
+- (nonnull UIViewController *)authenticationPresentingViewController {
+    return self;
+}
 
 @end

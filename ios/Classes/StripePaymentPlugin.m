@@ -19,6 +19,13 @@
   else if ([@"setPublishableKey" isEqualToString:call.method]) {
       [[STPPaymentConfiguration sharedConfiguration] setPublishableKey:call.arguments];
   }
+  else if ([@"timeout3DSecure" isEqualToString:call.method]) {
+      //self.timeout3DSecure = call.arguments;
+      
+  }
+  else if ([@"setSetupIntentClientSecret" isEqualToString:call.method]) {
+      self.setupIntentId = call.arguments;
+  }
   else {
       result(FlutterMethodNotImplemented);
   }
@@ -29,6 +36,8 @@
 
     STPAddSourceViewController* addSourceVC = [[STPAddSourceViewController alloc] init];
     addSourceVC.srcDelegate = self;
+    addSourceVC.timeout3DSecure = 5;
+    addSourceVC.setupIntentId = self.setupIntentId;
     
     UINavigationController* navigationController = [[UINavigationController alloc] initWithRootViewController:addSourceVC];
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];

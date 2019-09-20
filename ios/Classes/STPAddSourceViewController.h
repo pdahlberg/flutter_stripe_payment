@@ -15,6 +15,9 @@
 
 @property (nonatomic, weak, nullable) id<STPAddPaymentMethodViewControllerDelegate> srcDelegate;
 
+@property int timeout3DSecure;
+@property (nonatomic, nullable) NSString *setupIntentId;
+
 @end
 
 /**
